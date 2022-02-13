@@ -186,6 +186,8 @@ export default function Profile(props) {
         bio: UserBio,
 
       });
+
+      
       let options = {
         method: 'POST',
         body: data,
