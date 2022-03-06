@@ -1,7 +1,7 @@
 
 
-// const baseUrl= "http://fbdm.somee.com";
-const baseUrl= "https://localhost:44330";
+const baseUrl= "http://fbdm.somee.com";
+// const baseUrl= "https://localhost:44330";
 
 const Constants =  {
 
@@ -17,6 +17,8 @@ const Constants =  {
   GetallCatagory:baseUrl+"/Product/GetAllCats",
   addProduct:baseUrl+"/Product/AddProduct",
   ProductByCatagory:baseUrl+"/Product/AllProductByCatagory",
+  GetProductById:baseUrl+"/Product/GetProductById",
+  GetRecommendedProducts:baseUrl+"/Product/GetRecommendedProducts/",
 
 }
 

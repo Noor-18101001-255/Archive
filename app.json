@@ -1,7 +1,6 @@
 {
   "expo": {
     "name": "FYP",
-    "slug": "FYP",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -24,14 +23,15 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#FFFFFF"
       },
-      "splash":{
-        "image":"./assets/splash.png",
-        "resizeMode":"cover"
-      }
-
+      "splash": {
+        "image": "./assets/splash.png",
+        "resizeMode": "cover"
+      },
+      "package": "com.FBDM.App"
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "description": ""
   }
 }

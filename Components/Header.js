@@ -1,5 +1,5 @@
 import React from 'react';
-import { Text, View, TouchableOpacity, StyleSheet } from 'react-native';
+import { Text, View,StatusBar, TouchableOpacity, StyleSheet } from 'react-native';
 import Color from "../Models/Color";
 import { useFonts } from 'expo-font';
 import { AntDesign } from '@expo/vector-icons';
@@ -9,7 +9,7 @@ const RenderHeader = (props) => {
     <View style={Styles.headerContainer}>
       <View style={[Styles.childContainer, { alignItems: 'flex-start' }]}>
         {props.CanGoBack &&
-          <TouchableOpacity onPress={() => console.log("back")}>
+          <TouchableOpacity onPress={props.GoBack}>
             <AntDesign name="back" size={24} color="black" />
           </TouchableOpacity>
         }
@@ -43,12 +43,37 @@ const Header = (props) => {
 
 
   return (
-    <RenderHeader title={props.title} CanGoBack={props.CanGoBack} />
+    <View style={Styles.headerContainer}>
+      <View style={[Styles.childContainer, { alignItems: 'flex-start' }]}>
+        {props.CanGoBack &&
+          <TouchableOpacity onPress={props.GoBack}>
+            <AntDesign name="back" size={24} color="black" />
+          </TouchableOpacity>
+        }
+      </View>
+
+      <View style={Styles.childContainer}>
+        <Text style={Styles.headerText}>
+          {props.title}
+        </Text>
+      </View>
+
+      <View style={[Styles.childContainer, { alignItems: 'flex-end' }]}>
+        {!props.CanGoBack &&
+        
+        <TouchableOpacity style={{ flexDirection: 'row-reverse', padding: '2%', }} onPress={() => props.navigation.navigate('LoginScreen')}>
+          {/* <Text style={Styles.logoutText}>Logout</Text> */}
+          <AntDesign name="logout" size={24} color="black" />
+        </TouchableOpacity>
+        }
+      </View>
+    </View>
   );
 }
 
 const Styles = StyleSheet.create({
   headerContainer: {
+    marginTop:StatusBar.currentHeight,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',

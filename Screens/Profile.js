@@ -23,6 +23,7 @@ import Header from '../Components/Header';
 import Dialog from '../Components/Dialog';
 import GlobalMethods from '../Models/GlobalMethods';
 import ListItem from '../Components/ListItem';
+import Slider from '../Components/Slider';
 
 function Photos({ photos }) {
 
@@ -52,7 +53,12 @@ function Photos({ photos }) {
 
 function Albums(prop) {
   const [albums, setAlbum] = useState(prop.data);
-
+  const OpenProduct = (id) => {
+    console.log(id + " Selected");
+    prop.navigation.navigate('ProductScreen', {
+      productId: id,
+    })
+  }
   const imgWidth = Dimensions.get('screen').width * 0.33333;
   // alert(imgWidth);
   return (
@@ -61,15 +67,15 @@ function Albums(prop) {
       {albums.map((album, albumIndex) => (
         <ScrollView key={albumIndex} horizontal showsHorizontalScrollIndicator={false}>
           {album.images.map((img, imgIndex) => (
-            <TouchableWithoutFeedback key={imgIndex} style={{ flexDirection: 'row', marginTop: 10 }}
-              onPress={prop.ProductHanler}
+            <TouchableOpacity key={imgIndex} style={{ flexDirection: 'row', marginTop: 10 }}
+              onPress={OpenProduct.bind(this, img.id)}
             >
               <Image
                 style={{ width: imgWidth + 50, height: imgWidth + 50 }}
                 source={{ uri: img.image }}
               />
               {/* {console.log(imgWidth)} */}
-            </TouchableWithoutFeedback>
+            </TouchableOpacity>
           ))}
 
 
@@ -94,13 +100,21 @@ function Albums(prop) {
 }
 
 function Products(props) {
+  const OpenProduct = (id) => {
+    console.log(id + " Selected");
+    props.navigation.navigate('ProductScreen', {
+      productId: id,
+    })
+  }
+
   return (
     <View>
       <FlatList
         data={props.data}
         keyExtractor={(it, i) => i}
         renderItem={(({ item }) => (
-          <ListItem Item={item} />
+
+          <ListItem ClickHandler={OpenProduct} Item={item} />
         ))}
       />
     </View>
@@ -116,26 +130,28 @@ export default function Profile(props) {
   const [userProducts, setUserProducts] = useState([]);
   const [CatProducts, setCatProducts] = useState([]);
   const [allProducts, setAllProducts] = useState([]);
+  const [userId, setUserId] = useState('');
 
 
   useEffect(() => {
-    setAllProducts([]);
     // console.log(userProducts);
-    _.map(userProducts, (item) => {
+    Object.values(userProducts).map((item) => {
       // console.log(item);
       let images = [];
       let name = '';
-      _.map(item, (child) => {
+      // item.map((child) => {
+      Object.values(item).map((child) => {
         // console.log(child);
         setAllProducts(x => [...x, child]);
         name = child.catagory.name;
         if (child.picture.toString().startsWith('/Product')) {
           // console.log('product');
-          images = [...images, { image: 'https://localhost:44330/' + child.picture }];
+          // images = [...images, { image: 'https://localhost:44330/' + child.picture }];
+          images = [...images, { id: child.id, image: 'http://fbdm.somee.com/' + child.picture }];
         }
         else {
           // console.log('Non-product');
-          images = [...images, { image: child.picture }];
+          images = [...images, { id: child.id, image: child.picture }];
         }
       });
       let d = { name, images: images };
@@ -144,25 +160,21 @@ export default function Profile(props) {
     });
   }, [userProducts]);
 
-
-  useEffect(() => {
-    console.log(allProducts)
-  }, [allProducts]);
-
   const [loaded] = useFonts({
     SourceSansProLight: require('../assets/fonts/SourceSansPro/SourceSansPro-Light.ttf'),
     SourceSansProRegular: require('../assets/fonts/SourceSansPro/SourceSansPro-Regular.ttf'),
     SourceSansProBold: require('../assets/fonts/SourceSansPro/SourceSansPro-Bold.ttf'),
   });
   const fetching = async () => {
-    let data = await GlobalMethods.fetchUseById("18875a4d-91fd-4b6c-a11b-343dd689f084");
-
+    setUserId(props.route.params['UserId']);
+    let data = await GlobalMethods.fetchUseById(props.route.params['UserId']);
+    // data.picture = "http://fbdm.somee.com/User/18875a4d-91fd-4b6c-a11b-343dd689f084.jpg";
     setuser(data);
     // console.log(data);
     setUserBio(data.bio);
 
-    let productdata = await GlobalMethods.GetProductsByCatagory(Constants.userId);
-
+    let productdata = await GlobalMethods.GetProductsByCatagory(props.route.params['UserId']);
+    // console.log(productdata);
     setUserProducts(productdata);
     // let anObj = []
     // let obj = productdata;
@@ -176,9 +188,9 @@ export default function Profile(props) {
   const [showContent, setShowContent] = useState('Products');
 
   const EditUserBio = async () => {
-    if (UserBio != null && UserBio != '') {
+    if (UserBio != null && UserBio !== '' && !(UserBio === user.userBio)) {
 
-      console.log(UserBio);
+      console.log(user.userBio);
 
       let data = JSON.stringify({
         username: user.username,
@@ -187,7 +199,7 @@ export default function Profile(props) {
 
       });
 
-      
+
       let options = {
         method: 'POST',
         body: data,
@@ -225,7 +237,7 @@ export default function Profile(props) {
   }
   return (
     <View style={{ flex: 1, backgroundColor: '#fff' }}>
-      <Header title={user.username} CanGoBack={false} />
+      <Header title={user.username} navigation={props.navigation} CanGoBack={false} />
 
       {user &&
 
@@ -239,6 +251,7 @@ export default function Profile(props) {
                 // source={{ uri: 'https://picsum.photos/500/500?random=211' }}
                 source={{ uri: user.picture }}
               />
+
             </View>
             <View style={styles.profileContainer}>
               {/* Profile Details */}
@@ -292,7 +305,7 @@ export default function Profile(props) {
                     style={styles.interactButton}>
                     <Text
                       style={styles.interactButtonText}>
-                      Products
+                      Add Product
                     </Text>
                   </TouchableOpacity>
                 </View>
@@ -334,13 +347,15 @@ export default function Profile(props) {
                     <Text style={styles.showContentButtonText}>Products</Text>
                   </TouchableOpacity>
                 </View>
-                {showContent === 'Photos' ? (
+                {(allProducts.length > 0) ? showContent === 'Photos' ? (
                   <Photos photos={new Array(13).fill(1)} />
                 ) : showContent === 'Albums' ? (
-                  <Albums data={CatProducts} ProductHanler={GotoProducts} />
+                    <Albums navigation={props.navigation} data={CatProducts} />
                 ) : (
-                  <Products data={allProducts} />
-                )}
+                  <Products navigation={props.navigation} data={allProducts} />
+                ) :
+                  <Text style={{ flex: 1, justifyContent: 'center', alignSelf: 'center', height: 200, color: '#8b8b8b', }}>No Product found</Text>
+                }
               </View>
             </View>
           </>
@@ -417,7 +432,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#e9e9e9',
     borderRadius: 6,
     marginTop: 10,
-    outlineStyle: 'none',
+    // outlineStyle: 'none',
     paddingHorizontal: 10,
     fontSize: 16,
     color: '#333333',

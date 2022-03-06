@@ -15,17 +15,18 @@ import {
 import { LinearGradient } from 'expo-linear-gradient';
 import { Icon } from 'react-native-elements';
 import Color from '../Models/Color'
+import GlobalStyles from '../Models/GlobalStyles';
 // import Color from '../assets/dummyAvatar.jpg'
 
 
 const Login = (props) => {
 
   const SignOrLogIn = props.Title === "Login" || props.Title === "SignUp" ? true :false;
-  const existingUser = false;
+  let existingUser = false;
+  let ImageUri = '';
   if(SignOrLogIn){
-    const existingUser = props.Title !== "Login" ? true : false;
-    let ImageUri = '';
-    if (!existingUser) {
+    existingUser = props.Title !== "Login" ?  true :false;
+    if (existingUser) {
       if (props.ProfilePic === null)
         ImageUri = require('../assets/dummyAvatar.jpg');
       else
@@ -36,7 +37,7 @@ const Login = (props) => {
   }
 
   return (
-    <TouchableWithoutFeedback
+    <TouchableWithoutFeedback style={GlobalStyles.statusbarMargin}
       onPress={() => {
         // Keyboard.dismiss();
       }}>
@@ -51,7 +52,7 @@ const Login = (props) => {
             <Text style={styles.loginText}> </Text>
           </View>
         }
-        {(existingUser && SignOrLogIn) &&
+        {(!existingUser && SignOrLogIn) &&
           <View style={styles.loginTextContainer}>
 
             <Text style={styles.welcomeText}>Welcome Back!</Text>
@@ -59,14 +60,14 @@ const Login = (props) => {
           </View>
         }
 
-        {(!existingUser && SignOrLogIn) &&
+        {(existingUser && SignOrLogIn) &&
           <View style={styles.loginTextContainer}>
 
             <Text style={styles.welcomeText}>Welcome!</Text>
             <View style={styles.ProfileView}>
               <Text style={styles.loginText}>Sign Up</Text>
               <TouchableOpacity
-              onPress={props.ChooseImage.bind(this)}
+              onPress={props.ChooseImage}
               >
 
                 <View>
@@ -99,7 +100,7 @@ const Login = (props) => {
           </TouchableOpacity>
         }
 
-        {(!existingUser && SignOrLogIn) &&
+        {(existingUser && SignOrLogIn) &&
           <TouchableOpacity
             onPress={props.ChooseImage}>
             <Text style={[styles.fpText, { alignSelf: 'flex-start',marginVertical:10,fontWeight:'bold' }]}>Choose profile image</Text>
@@ -142,13 +143,13 @@ const Login = (props) => {
         </TouchableOpacity>
       </View> */}
 
-        {(existingUser && SignOrLogIn) &&
+        {(!existingUser && SignOrLogIn) &&
 
           <View style={styles.signUpTextView}>
             <Text style={styles.signUpText}>Don't have an account?</Text>
             <TouchableOpacity
               onPress={() => {
-                Alert.alert('Coming Soon!', 'The Option Is not available yet');
+                // Alert.alert('Coming Soon!', 'The Option Is not available yet');
                 props.navigation.navigate('SignUpScreen');
               }}>
               <Text style={[styles.signUpText, { color: '#B53471' }]}>
@@ -157,13 +158,13 @@ const Login = (props) => {
             </TouchableOpacity>
           </View>
         }
-        {(!existingUser && SignOrLogIn) &&
+        {(existingUser && SignOrLogIn) &&
 
           <View style={styles.signUpTextView}>
             <Text style={styles.signUpText}>Already have a account?</Text>
             <TouchableOpacity
               onPress={() => {
-                Alert.alert('Coming Soon!', 'The Option Is not available yet');
+                // Alert.alert('Coming Soon!', 'The Option Is not available yet');
                 props.navigation.navigate('LoginScreen');
               }}>
               <Text style={[styles.signUpText, { color: '#B53471' }]}>

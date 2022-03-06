@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-import { View } from 'react-native';
+import { View,StatusBar } from 'react-native';
 import LoginScreen from '../Screens/LoginScreen'
 import SignUpScreen from '../Screens/SignUpScreen'
 import Profile from '../Screens/Profile'
@@ -38,23 +38,29 @@ const options = ({ route }) => {
 
 const MainNavigator = () => {
   return (
-    <NavigationContainer>
-      <Stack.Navigator>
+    
+    <NavigationContainer  >
+      <Stack.Navigator >
 
+      <Stack.Screen name="LoginScreen"
+          component={LoginScreen}
+          options={{
+            headerShown: false,
+          }} />
 
         <Stack.Screen name="Profile"
           component={Profile}
           options={options} />
+          
+        <Stack.Screen name="ProductScreen"
+          component={ProductScreen}
+          options={options} />
+
 
         <Stack.Screen name="CreateProduct"
           component={CreateProduct}
           options={options} />
 
-        <Stack.Screen name="LoginScreen"
-          component={LoginScreen}
-          options={{
-            headerShown: false,
-          }} />
 
         <Stack.Screen name="SignUpScreen"
           component={SignUpScreen}
@@ -64,13 +70,10 @@ const MainNavigator = () => {
 
 
 
-        <Stack.Screen name="ProductScreen"
-          component={ProductScreen}
-          options={options} />
-
 
       </Stack.Navigator>
     </NavigationContainer>
+ 
   );
 }
 

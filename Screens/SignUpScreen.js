@@ -22,6 +22,11 @@ const SignUpScreen = (props) => {
       [name]: value
     }));
   };
+  React.useEffect(() => {
+    StatusBar.setBarStyle('dark-content', true);
+    // StatusBar.setBackgroundColor('red', true);
+    // console.log("Status bar length "+StatusBar.currentHeight);
+  }, []);
   const ValueChecker = (val) => val.length >0
 
   const SignUpUser = () => {

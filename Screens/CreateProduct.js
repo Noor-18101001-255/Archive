@@ -38,7 +38,7 @@ const SignUpScreen = (props) => {
   // }
   const CreateProduct = () => {
     let product = Product;
-    product.createrId = Constants.userId;
+    product.createrId = props.route.params['userId'];
      
     if (Images === null) {
       Alert.alert("Please Choose images ");
@@ -75,13 +75,13 @@ const SignUpScreen = (props) => {
       fetch(Constants.addProduct, options).then(x => x.text())
         .then(x => {
           if (x == "Done") {
-            Alert.alert('Login Successfully', 'PLease wait');
-            alert('Logined');
+            Alert.alert('Created', 'Product Created');
+            // alert('Logined');
             props.navigation.navigate('Profile');
           }
           else {
-            Alert.alert('Login Failed', 'x');
-            alert('Failed');
+            Alert.alert('Failed', 'Product Creation Failed');
+            // alert('Failed');
           }
         }).catch((error) => {
           console.log(error);
@@ -90,7 +90,7 @@ const SignUpScreen = (props) => {
     }
     else {
       Alert.alert("Please fill all fields");
-      console.log("Please fill all fields");
+      // console.log("Please fill all fields");
     }
 
 
@@ -146,7 +146,7 @@ const SignUpScreen = (props) => {
         style={styles.input}
         autoCorrect={true}
         // autoCapitalize={false}
-        autoCompleteType="name"
+        // autoCompleteType="name"
         keyboardType="default"
         textContentType="name"
         bind={Product.Name}
@@ -159,7 +159,7 @@ const SignUpScreen = (props) => {
         style={styles.input}
         autoCorrect={true}
         // autoCapitalize={false}
-        autoCompleteType="number"
+        // autoCompleteType="number"
         keyboardType="number-pad"
         bind={Product.Quantity}
         value={Product.Quantity}
@@ -171,7 +171,7 @@ const SignUpScreen = (props) => {
         style={styles.input}
         autoCorrect={true}
         // autoCapitalize={false}
-        autoCompleteType="number"
+        // autoCompleteType="number"
         keyboardType="number-pad"
         bind={Product.Price}
         value={Product.Price}

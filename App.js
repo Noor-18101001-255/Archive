@@ -1,18 +1,18 @@
 // import 'react-native-gesture-handler';
 import  React from 'react';
-import { StatusBar } from 'react-native';
+import { View,StatusBar } from 'react-native';
 import MainNavigator from './Components/MainNavigator';
+import Slider from './Components/Slider';
 
 
 const MyStack = () => {
   React.useEffect(() => {
-    StatusBar.setBarStyle('light-content', true);
+    // StatusBar.setBarStyle('dark-content', true);
+    // StatusBar.setBackgroundColor('red', true);
+    // console.log("Status bar length "+StatusBar.currentHeight);
   }, []);
   return (
-      <MainNavigator>
-
-      </MainNavigator>
-   
+      <MainNavigator/>
   )
 }
 export default MyStack

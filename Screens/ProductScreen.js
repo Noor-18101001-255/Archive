@@ -10,32 +10,36 @@ import {
 } from 'react-native';
 
 import Constants from 'expo-constants';
-import { Feather as Icon, FontAwesome as FAIcon } from '@expo/vector-icons';
+import { AntDesign as Ant, Feather as Icon, FontAwesome as FAIcon } from '@expo/vector-icons';
 
 import { useFonts } from 'expo-font';
 import MontserratRegular from '../assets/fonts/Montserrat/Montserrat-Regular.ttf';
 import MontserratBold from '../assets/fonts/Montserrat/Montserrat-Bold.ttf';
 import MontserratExtraBold from '../assets/fonts/Montserrat/Montserrat-ExtraBold.ttf';
- 
+import Slider from '../Components/Slider';
+import Header from '../Components/Header';
+import GlobalMethods from '../Models/GlobalMethods';
+import AppLoading from 'expo-app-loading';
+
 
 const Rating = ({ rating, maxRating }) => {
   return (
     <View style={{ flexDirection: 'row' }}>
       {Array(rating)
         .fill(1)
-        .map((el,ind) => (
+        .map((el, ind) => (
           <FAIcon name='star' key={ind} size={20} color='#2e2e2e' />
         ))}
       {Array(maxRating - rating)
         .fill(1)
-        .map((el,ind) => (
-          <FAIcon name='star-o' key={ind}  ind size={20} color='#2e2e2e' />
+        .map((el, ind) => (
+          <FAIcon name='star-o' key={ind} ind size={20} color='#2e2e2e' />
         ))}
     </View>
   );
 };
 
-export default function ProductScreen() {
+export default function ProductScreen(props) {
   const [loaded] = useFonts({
     MontserratRegular,
     MontserratBold,
@@ -57,62 +61,113 @@ export default function ProductScreen() {
   );
 
   const [seeFullDescription, setSeeFullDescription] = useState(false);
+  const [assetsLoaded, setAssetsLoaded] = useState(false);
+  const [product, setProduct] = useState([]);
+  const [productImages, setProductImages] = useState([]);
 
-  const [moreProducts] = useState([
-    {
-      productName: 'Black Printed Tshirt',
-      productPrice: 19.49,
-      productImage:
-        'https://images.unsplash.com/photo-1503341504253-dff4815485f1?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=300&q=60',
-    },
-    {
-      productName: 'Black Printed Top (Women)',
-      productPrice: 19.49,
-      productImage:
-        'https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=300&q=90',
-    },
-    {
-      productName: 'White Solid Tshirt',
-      productPrice: 34.99,
-      productImage:
-        'https://images.unsplash.com/photo-1574180566232-aaad1b5b8450?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=300&q=60',
-    },
-    {
-      productName: 'Black Solid Tshirt',
-      productPrice: 34.99,
-      productImage:
-        'https://images.unsplash.com/photo-1512327428889-607eeb19efe8?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=300&q=60',
-    },
-    {
-      productName: 'Red Top (Women)',
-      productPrice: 44.85,
-      productImage:
-        'https://images.unsplash.com/photo-1456885284447-7dd4bb8720bf?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=300&q=60',
-    },
-  ]);
+  const [ReqProducts, setRecProduct] = useState([]);
+  const [moreProducts, setMoreProduct] = useState([]);
+
+  // productName: 'Black Printed Tshirt',
+  // productPrice: 19.49,
+  // productImage:
+  //   'https://images.unsplash.com/photo-1503341504253-dff4815485f1?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=300&q=60',
 
   useEffect(() => {
     StatusBar.setBarStyle('dark-content');
     StatusBar.setBackgroundColor('#fff');
   }, []);
+  useEffect(() => {
+    if (typeof (product.picture) !== 'undefined') {
+      let a = '';
+      a = product.picture;
+      let c = a.split('=|=');
+      console.log(c);
+      console.log(typeof (c));
+      if (c.length > 1)
+        c = c.filter(x => x);
 
-  // if (!loaded) {
-  //   return (
-  //     <View>
-  //       <Text>Loading...</Text>
-  //     </View>
-  //   );
-  // }
+      console.log(c);
+      let b = [];
+      c.map(val => {
+        b = [...b, {
+          image: val,
+        }]
+        return b;
+      });
+      setProductImages(b);
+
+    }
+  }, [product]);
+
+  useEffect(() => {
+    let data = ReqProducts;
+    let d =[];
+    Object.values(data).map(item => {
+      let pictures = '';
+      pictures = item.picture;
+      let a  = pictures.split("=|=");
+      d =[...d,
+        {
+          productName: item.name,
+          productPrice: item.price,
+          productImage: a[0],
+        }];
+      });
+       
+    
+    setMoreProduct(d);
+
+  }, [ReqProducts]);
+
+  useEffect(() => {
+console.log(moreProducts)
+  },[moreProducts]);
+
+
+
+  const fetching = async () => {
+    console.log(props.route.params)
+    let data = await GlobalMethods.fetchProductById(props.route.params.productId);
+    console.log(data);
+    setProduct(data);
+
+    let MoreProductdata = await GlobalMethods.GetRecommendedProducts(data.createrId, data.id);
+    console.log(MoreProductdata);
+    setRecProduct(MoreProductdata);
+
+
+  }
+
+  const navigateBack = () => {
+    console.log("Back");
+    props.navigation.goBack();
+  }
+
+
+
+  if (!assetsLoaded || !loaded) {
+    return (
+      <AppLoading
+        startAsync={fetching}
+        onFinish={() => { setAssetsLoaded(true); }}
+        onError={console.warn}
+      />
+    );
+  }
 
   return (
     <View style={{ flex: 1 }}>
-      <View style={styles.header}>
-        <Icon name='menu' size={30} />
-        <Text style={styles.headerTitle}>Shop</Text>
-        <Icon name='shopping-bag' size={26} />
-      </View>
+      {/* <View style={styles.header}>
+      <TouchableOpacity onPress={()=>props.navigation.goBack()}>
+        <Ant name='back' size={30} />
+      </TouchableOpacity>
+        <Text style={styles.headerTitle}>{product.name}</Text>
+        <Icon name='' size={26} />
+      </View> */}
+      <Header title={product.catagory.name} GoBack={navigateBack.bind(this)} CanGoBack={true} />
       <ScrollView showsVerticalScrollIndicator={false}>
-        <View>
+        {/* <View>
           <Image
             style={{ height: 500, resizeMode: 'cover' }}
             source={{
@@ -120,20 +175,24 @@ export default function ProductScreen() {
                 'https://images.unsplash.com/photo-1527719327859-c6ce80353573?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=500&q=60',
             }}
           />
-        </View>
+        </View> */}
+        <Slider data={productImages} />
         <View style={styles.detailsView}>
           <View style={styles.productTitleView}>
-            <Text style={styles.productTitle}>Men's OutCast T-Shirt</Text>
+            <Text style={styles.productTitle}>{product.name}</Text>
             <TouchableOpacity onPress={() => setFavourite(!isFavourite)}>
               <FAIcon name={isFavourite ? 'heart' : 'heart-o'} size={22} />
             </TouchableOpacity>
           </View>
           <View style={styles.productPriceView}>
-            <Text style={styles.discountedPriceText}>$29.99</Text>
-            <Text style={styles.actualPriceText}>$40.00</Text>
+            <Text style={styles.discountedPriceText}>${Math.round(product.price)}</Text>
+            <Text style={styles.actualPriceText}>${Math.round(product.price + (product.price * 0.3))}</Text>
           </View>
           <View style={{ marginTop: 10 }}>
-            <Rating rating={4} maxRating={5} />
+            <Rating
+              // rating={Math.floor(Math.random() * 5) + 2} 
+              rating={4}
+              maxRating={5} />
           </View>
           <View style={{ marginTop: 20 }}>
             <Text
@@ -204,7 +263,7 @@ export default function ProductScreen() {
             </Text>
           </View>
         </View>
-        <View style={{ marginTop: 10 }}>
+        {moreProducts.length>0&&<View style={{ marginTop: 10 }}>
           <Text
             style={{
               fontFamily: 'MontserratBold',
@@ -216,7 +275,7 @@ export default function ProductScreen() {
           </Text>
           <ScrollView horizontal showsHorizontalScrollIndicator={false}>
             <View style={{ flex: 1, flexDirection: 'row', paddingTop: 10 }}>
-              {moreProducts.map((item,ind) => (
+              { Object.values(moreProducts).map((item, ind) => (
                 <View key={ind} style={{ width: 180, marginHorizontal: 10 }}>
                   <View style={styles.moreProductImageView}>
                     <Image
@@ -260,8 +319,8 @@ export default function ProductScreen() {
               ))}
             </View>
           </ScrollView>
-        </View>
-        <View style={{ height: 40 }}></View>
+        </View>}
+        <View style={{ height: 60 }}></View>
       </ScrollView>
     </View>
   );
